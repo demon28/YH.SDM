@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Victory.Core.Encrypt;
 using Victory.Core.Controller;
 using YH.SDM.Entity.CodeGenerator;
 using System.Security.Claims;
@@ -40,10 +39,10 @@ namespace YH.SDM.WebApp.Controllers
 
             Facade.LoginFacade loginFacade = new Facade.LoginFacade();
 
-            password = Md5.Encrypt32(password);
+            password =Entity.MD5Help.Encrypt(password);
 
 
-            Team_User userModel = new Team_User();
+            Tsys_User userModel = new Tsys_User();
 
             if (!loginFacade.Login(workid, password, ref userModel))
             {

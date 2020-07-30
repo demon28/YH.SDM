@@ -1437,4 +1437,8 @@
     <ProjectReference Include="..\YH.SDM.Facade\YH.SDM.Facade.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

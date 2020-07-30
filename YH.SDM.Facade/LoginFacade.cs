@@ -1,14 +1,15 @@
-﻿using YH.SDM.Entity.CodeGenerator;
+﻿using YH.EAM.DataAccess.CodeGenerator;
+using YH.SDM.Entity.CodeGenerator;
 
 namespace YH.SDM.Facade
 {
     public class LoginFacade : FacadeBase
     {
 
-        public bool Login(string workId, string pwd, ref Team_User user)
+        public bool Login(string workId, string pwd, ref Tsys_User user)
         {
 
-            DataAccess.CodeGenerator.Team_User_Da da = new DataAccess.CodeGenerator.Team_User_Da();
+            Tsys_User_Da da = new Tsys_User_Da();
 
             if (da.Where(s => s.Workid == workId).ToOne() == null)
             {

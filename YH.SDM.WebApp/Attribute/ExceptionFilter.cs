@@ -23,7 +23,7 @@ namespace YH.SDM.WebApp.Attribute
             Log4netHelper.Error(ex.Message);//记录错误日志
             InsertSysLog(ex.Message);   //添加到数据库
 
-            context.ExceptionHandled = true; //代表异常已经处理，不会再跳转到开发调试时的异常信息页，可以跳转到我们下面自定义的方法中。若开发过程可以将 该行注释掉，则直接抛出异常调试
+           // context.ExceptionHandled = true; //代表异常已经处理，不会再跳转到开发调试时的异常信息页，可以跳转到我们下面自定义的方法中。若开发过程可以将 该行注释掉，则直接抛出异常调试
 
             //通过HTTP请求头来判断是否为Ajax请求，Ajax请求的request headers里都会有一个key为x-requested-with，值“XMLHttpRequest”
             var requestData = context.HttpContext.Request.Headers.ContainsKey("x-requested-with");

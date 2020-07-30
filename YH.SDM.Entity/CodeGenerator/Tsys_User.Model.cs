@@ -4,18 +4,19 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
+
 namespace YH.SDM.Entity.CodeGenerator
 {
     /// <summary>
     ///  
     ///</summary>
-    public class Team_User
+    public class   Tsys_User
     {
 
-        public Team_User()
-        {
-
-        }
+       public Tsys_User()
+       {
+      
+       }
 
         ///<summary>
         ///描述：主键
@@ -78,14 +79,13 @@ namespace YH.SDM.Entity.CodeGenerator
         ///描述：
         ///</summary>
         public string Remarks { get; set; }
-
         ///<summary>
-        ///描述：入职时间
+        ///描述：
         ///</summary>
         public DateTime Comedate { get; set; }
 
     }
-}
+ }
 
 
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Victory.Core.Controller;
 using YH.SDM.DataAccess.CodeGenerator;
@@ -47,7 +43,7 @@ namespace YH.SDM.WebApp.Controllers
         [HttpPost]
         public IActionResult ListFunc()
         {
-            DataAccess.CodeGenerator.Tright_Power_Da da = new DataAccess.CodeGenerator.Tright_Power_Da();
+           Tright_Power_Da da = new Tright_Power_Da();
 
             return SuccessResultList(da.ListByOder());
 

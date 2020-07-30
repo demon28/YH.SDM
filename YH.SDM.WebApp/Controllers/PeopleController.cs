@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 using Victory.Core.Controller;
 using Victory.Core.Models;
+using YH.EAM.DataAccess.CodeGenerator;
+using YH.SDM.DataAccess.CodeGenerator;
 using YH.SDM.DataAccess.CodeGenerator;
 using YH.SDM.Entity.CodeGenerator;
 using YH.SDM.WebApp.Attribute;
@@ -28,7 +30,7 @@ namespace YH.SDM.WebApp.Controllers
             page.PageSize = pageSize;
 
 
-            Team_User_Da da = new Team_User_Da();
+            Tsys_User_Da da = new Tsys_User_Da();
             var list = da.ListByWhere(keyword, ref page);
 
 
