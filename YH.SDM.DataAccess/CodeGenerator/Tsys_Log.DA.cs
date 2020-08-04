@@ -25,7 +25,6 @@ namespace YH.SDM.DataAccess.CodeGenerator
 
         public List<Tsys_Log> ListByWhere(string keyword, SysLogType type, ref PageModel page)
         {
-
             var data = this.Select;
 
             if (!string.IsNullOrEmpty(keyword))
@@ -41,7 +40,7 @@ namespace YH.SDM.DataAccess.CodeGenerator
             page.TotalCount = data.Count().ToInt();
 
             var list = data.Page(page.PageIndex, page.PageSize)
-                .OrderBy(s => s.Createtime)
+                .OrderByDescending(s => s.Createtime)
                 .ToList();
 
             return list;
