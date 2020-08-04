@@ -26,4 +26,13 @@ namespace YH.SDM.Entity.Enums
         页面访问 = 1,
         功能操作 = 2
     }
+
+
+    public enum DelStatus
+    {
+
+        正常=0,
+        删除=1
+
+    }
 }

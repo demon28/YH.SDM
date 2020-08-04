@@ -55,7 +55,6 @@ namespace YH.SDM.WebApp.Controllers
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
-        /// 
         [Right(PowerName = "分配权限")]
         [HttpPost]
         public IActionResult GetUserRoleMebmer(int userid)
