@@ -2,6 +2,292 @@
 @{
     ViewData["Title"] = "InfoInput";
 }
+@section Pageheader{
 
-<h2>InfoInput</h2>
+    <h1>
+        <small>客户信息创建 </small>
+
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Customer</li>
+    </ol>
+
+}
+<section class="content" id="tab">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class=" col-md-8">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">客户信息</h3>
+                </div>
+                <form class="form-horizontal">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">公司名称（中文）</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.CompanyChinese">
+                                </div>
+                                <label class="col-md-2 control-label">公司名称（英文）</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.CompanyEnglish">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">法人代表</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.TheLegalRepresentative">
+                                </div>
+                                <label class="col-md-2 control-label">注册地址</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.RegisterAddress">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">办公地址</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.OfficeAddress">
+                                </div>
+                                <label class="col-md-2 control-label">定单联系人</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.OrderContact">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">联系电话1</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.Telphone1">
+                                </div>
+                                <label class="col-md-2 control-label">邮政编码</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.ZipCode">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">联系传真1</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.fax1">
+                                </div>
+                                <label class="col-md-2 "></label>
+                                <div class="col-md-4" style="display: table">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">收货地址</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.ReceiptAddress">
+                                </div>
+                                <label class="col-md-2 control-label">收货联系人</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.ReceiptContact">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">联系电话2</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.Telphone2">
+                                </div>
+                                <label class="col-md-2 control-label">正常收货时间</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.ReceiptDate">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">联系传真2</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.fax2">
+                                </div>
+                                <label class="col-md-2 "></label>
+                                <div class="col-md-4" style="display: table">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">开票地址</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.BillingAddress">
+                                </div>
+                                <label class="col-md-2 control-label">开户银行</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.AccountBank">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">银行账号</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.Account">
+                                </div>
+                                <label class="col-md-2 control-label">税号</label>
+                                <div class="col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.TaxNumber">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-3 control-label" style="text-align:center">是否一般纳税人资格</label>
+                            <label class="col-md-1">
+                                <input type="radio" name="r3" class="flat-red" style="width:18px;height:18px" checked   v-model="picked" value="是" >
+                                <span>是</span>
+                            </label>
+                            <label class="col-md-1">
+                                <input type="radio" name="r3" style="width:18px;height:18px" class="flat-red" v-model="picked" value="否">
+                                <span>否</span>
+                            </label>
+                            <label class="col-md-1">
+                                <input type="radio" name="r3" style="width:18px;height:18px" class="flat-red" v-model="picked" value="其他">
+                                <span>其他</span>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-2 control-label">商家所属省份</label>
+                                <div class="  col-md-4" style="display: table">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
+                                    <input type="text" class="form-control" style="width:auto" v-model="infoItem.Province">
+                                </div>
+                                <label class="col-md-2 "></label>
+                                <div class="col-md-4" style="display: table">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">有效营业执照</label>
+                            <div class="col-md-4" style="display: table">
+                                <input type="file" id="exampleInputFile">
+                            </div>
+                            <label class="col-md-2 control-label">一般纳税人资格证书</label>
+                            <div class="col-md-4" style="display: table">
+                                <input type="file" id="exampleInputFile">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-4 control-label">法人身份证复印件 或 被授权人身份证及授权书</label>
+                            <div class="col-md-6" style="display: table">
+                                <input type="file" id="exampleInputFile">
+                            </div>
+
+                        </div>
+                        <div class="box-footer">
+                            <button type="reset" class="btn btn-default">取消</button>
+                            <button type="button" class="btn btn-info pull-right" v-on:click="Add()">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</section>
+@section scripts{
+    <script>
+
+        var self;
+        var vm = new Vue({
+            el: "#tab",
+            data: {
+                list: [],
+                infoItem: {
+                    CompanyChinese: "",
+                    CompanyEnglish: "",
+                    TheLegalRepresentative: "",
+                    RegisterAddress: "",
+                    OfficeAddress: "",
+                    OrderContact: "",
+                    Telphone1: "",
+                    ZipCode: "",
+                    fax1: "",
+                    ReceiptAddress: "",
+                    ReceiptContact: "",
+                    Telphone2: "",
+                    ReceiptDate: "",
+                    fax2: "",
+                    BillingAddress: "",
+                    AccountBank: "",
+                    Account: "",
+                    TaxNumber: "",
+                    Province: "",
+                    picked:"是"
+                    //TODO:  1，把属性加全
+                }
+            },
+            created: function () {
+                self = this;
+
+            },
+            methods: {
+                Add() {
+                    //TODO: 把界面上的为空判断加好，可以使用三方的一些jquery插件。
+
+                    AjaxPost({
+                        url: "/CustomerInfoInput/Add",
+                        data: self.infoItem,
+                        success: function (result) {
+
+                            console.log(result);
+
+                            if (!result.Success) {
+                                alert_danger(result.Message);
+                            }
+                            alert_success("创建成功");
+                          
+                        }
+                    })
+
+
+                }
+            },
+        })
+    </script>
+}
+
 
