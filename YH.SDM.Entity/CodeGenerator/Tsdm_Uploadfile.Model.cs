@@ -30,11 +30,11 @@ namespace YH.EAM.Entity.CodeGenerator
         [Column(IsIdentity = true, IsPrimary = true)]
         public int Id { get; set; }
         ///<summary>
-        ///描述：原始文件名
+        ///描述：服务器中加密文件名
         ///</summary>
         public string File_Encode_Name { get; set; }
         ///<summary>
-        ///描述：服务器中文件名
+        ///描述：原文件名
         ///</summary>
         public string File_Decode_Name { get; set; }
         ///<summary>
@@ -45,6 +45,10 @@ namespace YH.EAM.Entity.CodeGenerator
         ///描述：文件类型，后缀名
         ///</summary>
         public string File_Type { get; set; }
+        ///<summary>
+        ///描述：文件编号
+        ///</summary>
+        public string File_Number { get; set; }
         ///<summary>
         ///描述：服务器中文件路径
         ///</summary>
@@ -73,10 +77,7 @@ namespace YH.EAM.Entity.CodeGenerator
         ///描述：创建时间
         ///</summary>
         public DateTime Create_Time { get; set; }
-        ///<summary>
-        ///描述：创建人id，外键user表
-        ///</summary>
-        public int Create_Userid { get; set; }
+
         ///<summary>
         ///描述：备注
         ///</summary>

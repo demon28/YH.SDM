@@ -58,45 +58,22 @@ namespace YH.SDM.DataAccess.CodeGenerator
             return Select.Where(s => s.Isdel == (int)DelStatus.正常).ToTreeList();
         }
 
+
+
         public bool DelDir(int id)
         {
 
-            using (var uow = DataAccess.DbContext.Db.CreateUnitOfWork())
-            {
-
-                Tsdm_directory model = uow.Orm.Select<Tsdm_directory>().Where(s => s.Id == id).First();
-
-                model.Isdel = (int)DelStatus.删除;
-
-                int count = uow.Orm.Update<Tsdm_directory>(model).ExecuteAffrows(); ;
+            var list = this.Select
+                             .Where(s => s.Id == id)
+                             .AsTreeCte()
+                              .ToList();
 
 
-                if (count <= 0)
-                {
-                    uow.Rollback();
-                    return false;
-                }
+            int count = this.UpdateDiy.WhereDynamic(list).Set(a => a.Isdel, (int)DelStatus.删除).ExecuteAffrows();
 
-                List<Tsdm_directory> list = uow.Orm.Select<Tsdm_directory>().Where(s => s.ParentId == id).AsTreeCte().ToList();
+            return count > 0;
 
 
-                foreach (var item in list)
-                {
-                    item.Isdel = (int)DelStatus.删除;
-                }
-
-                int offset= uow.Orm.Update<Tsdm_directory>(list).ExecuteAffrows();
-
-                if (offset <= 0)
-                {
-                    uow.Rollback();
-                    return false;
-                }
-
-                uow.Commit();
-                return true;
-
-            }
         }
     }
 

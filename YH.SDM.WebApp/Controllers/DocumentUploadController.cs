@@ -32,8 +32,9 @@ namespace YH.SDM.WebApp.Controllers
             return View();
         }
 
-      
-        public IActionResult ListFile(string keyword, int pageIndex, int pageSize)
+        [Right(PowerName = "查询文件")]
+        [HttpPost]
+        public IActionResult ListFile(int dirid,string keyword, int pageIndex, int pageSize)
         {
 
             PageModel page = new PageModel();
@@ -42,7 +43,7 @@ namespace YH.SDM.WebApp.Controllers
 
 
             Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
-            var list = da.ListByWhere(keyword, ref page);
+            var list = da.ListByDirId(dirid,keyword, ref page);
             return SuccessResultList(list, page);
         }
 
@@ -82,16 +83,7 @@ namespace YH.SDM.WebApp.Controllers
             return FailMessage();
         }
 
-
-        [Right(PowerName = "查询文件")]
-        [HttpPost]
-        public IActionResult ListFileByDirId(int dirid)
-        {
-            Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
-            var list = da.ListByDirId(dirid);
-
-            return SuccessResultList(list);
-        }
+    
 
 
         #endregion
@@ -134,14 +126,10 @@ namespace YH.SDM.WebApp.Controllers
         public IActionResult DelDir(int id)
         {
             Tsdm_directory_Da da = new Tsdm_directory_Da();
-
-            Tsdm_directory model= da.Select.Where(s => s.Id == id).First();
-            model.Isdel = (int)DelStatus.删除;
             
-            if (da.Update(model)>0)
+            if (da.DelDir(id))
             {
                 return SuccessMessage("已删除！");
-
             }
             return FailMessage();
         }

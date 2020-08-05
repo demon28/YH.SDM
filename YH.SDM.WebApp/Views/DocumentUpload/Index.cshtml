@@ -63,42 +63,45 @@
     <div class="row">
 
         <!-- /.col -->
-        <div class="col-md-3"  >
+        <div class="col-md-3">
             <div class="box box-primary">
                 <div class="box-header">
-                    <h3 class="box-title">目录</h3>
+                    <h3 class="box-title">菜单</h3>
 
                     <div class="box-tools">
 
                         <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-                            <button type="button" class="btn btn-xs pull-right bg-blue" @@click="AddDir()" id="btn_Search">新建文件夹</button>
+
+                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="AddDir()" id="btn_Search">   <i class="fa fa-align-justify"></i> 创建根目录</button>
                         </div>
 
                     </div>
                 </div>
                 <!-- /.box-header -->
-                <div class="box-body table-responsive no-padding" >
-                
-                        <el-tree :data="dirlist"
-                                 :props="defaultProps"
-                                 node-key="id"
-                                 @@node-click="handleNodeClick"
-                                 @@node-contextmenu="rightClick"></el-tree>
+                <div class="box-body table-responsive no-padding">
 
-                        <div id="perTreeMenu" v-if="tmDisplay" class="tree_menu" :style="{...rightMenu}">
-                            <ul>
-                                <li @@click="AddDir()">
-                                    <i class="el-icon-tickets"></i> 新建
-                                </li>
-                                <li @@click="UpdateDir()">
-                                    <i class="el-icon-edit"></i> 编辑
-                                </li>
-                                <li @@click="DelDir()">
-                                    <i class="el-icon-delete"></i> 删除
-                                </li>
-                            </ul>
-                        </div>
-                 
+                    <el-tree :data="dirlist"
+                             :props="defaultProps"
+                             node-key="id"
+                             default-expand-all
+                             :expand-on-click-node="false"
+                             @@node-click="handleNodeClick"
+                             @@node-contextmenu="rightClick"></el-tree>
+
+                    <div id="perTreeMenu" v-if="tmDisplay" class="tree_menu" :style="{...rightMenu}">
+                        <ul>
+                            <li @@click="MenuAddDir()">
+                                <i class="el-icon-tickets"></i> 新建
+                            </li>
+                            <li @@click="UpdateDir()">
+                                <i class="el-icon-edit"></i> 编辑
+                            </li>
+                            <li @@click="DelDir()">
+                                <i class="el-icon-delete"></i> 删除
+                            </li>
+                        </ul>
+                    </div>
+
 
                 </div>
                 <!-- /.box-body -->
@@ -128,11 +131,48 @@
                     <div class="box-tools">
 
 
+
+
+
+                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
+                            <button type="button" class="btn btn-sm pull-right bg-red" @@click="DelFile()" id="btn_Search">  <i class="fa fa-trash-o"></i> 删除</button>
+                        </div>
+
+                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
+                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="DownFile()" id="btn_Search">  <i class="fa fa-download"></i> 下载</button>
+                        </div>
+
+                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
+                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="ShowAddFile()" id="btn_Search">  <i class="fa fa-upload"></i> 上传</button>
+                        </div>
                     </div>
+
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th><input type="checkbox" name="chk_file" /></th>
+                                <th>文件名</th>
+                                <th>发布人</th>
+                                <th>上传时间</th>
+                                <th>操作</th>
+                            </tr>
+                            <tr v-for="(item,index) in fileList">
 
+                                <td><input type="checkbox" name="chk_file" /></td>
+                                <td>{{item.File_Decode_Name}}.{{item.File_Type}}</td>
+                                <td>{{item.Upload_UserName}}</td>
+                                <td>{{item.Create_Time}}</td>
+                                <td>
+                                    <button type="button" class="btn bg-purple  btn-xs" v-on:click="Role(item)">重命名</button>
+                                    <button type="button" class="btn bg-red  btn-xs" v-on:click="Role(item)">删除</button>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
 
 
                 </div>
@@ -145,9 +185,9 @@
                     </div>
 
                     <div class="card-footer clearfix pull-right " style="margin-right:30px;margin-top:30px;margin-bottom:30px" id="div_page">
-
-                        <ul class="pagination pagination-sm no-margin pull-right" id="ul_page">
-                        </ul>
+                        <zpagenav v-bind:page="pageModel.pageIndex" v-bind:page-size="pageModel.pageSize" v-bind:total="pageModel.TotalCount"
+                                  v-bind:max-page="pageModel.ToTalPage" v-on:pagehandler="InitFile">
+                        </zpagenav>
                     </div>
 
 
@@ -170,12 +210,23 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="txt_username">角色信息</h4>
+                    <h4 class="modal-title" id="txt_username">上传文档</h4>
                 </div>
                 <div class="modal-body">
 
 
+                    <el-upload class="upload-demo"
+                               ref="upload"
+                               action="https://jsonplaceholder.typicode.com/posts/"
+                               :on-preview="handlePreview"
+                               :on-remove="handleRemove"
+                               :file-list="uploadfile"
+                               :multiple="true"
+                               :auto-upload="false">
+                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                        <el-button style="margin-left: 10px;" size="small" type="success" @@click="SubmitUpload">上传到服务器</el-button>
 
+                    </el-upload>
 
                 </div>
                 <div class="modal-footer">
@@ -205,7 +256,7 @@
             data: {
                 dirlist: [],
                 fileList: [],
-
+                uploadfile: [],
                 keywork: "",
 
                 checkDir: {},   //当前选中的文件夹节点
@@ -213,24 +264,30 @@
                 defaultProps: {
                     children: 'Childs',
                     label: 'Dir_Name'
-                }
+                },
+                pageModel: {
+                    pageIndex: 1,
+                    pageSize: 20,
+                    TotalCount: 0,
+                    ToTalPage: 0,
+                },
+                istable: true,
+
+
             },
             created: function () {
                 self = this;
-
-                this.InitDir();
+                self.InitDir();
+                self.InitFile(1);
             },
             mounted() {
                 this.EnterKeyup();
             },
             methods: {
-
-
                 Query() {
 
 
                 },
-
                 InitDir() {
 
                     AjaxPost({
@@ -252,10 +309,9 @@
                         }
                     })
                 },
-
-                AddDir() {
+                AddDir(pid) {
                     //添加文件夹
-                
+
                     bootbox.prompt({
                         size: "small",
                         title: "请输入文件夹名称:",
@@ -268,17 +324,7 @@
 
                             var model = {};
                             model.dir_name = res;
-
-                            console.log("self.checkDir", self.checkDir, "Object.keys(self.checkDir)", Object.keys(self.checkDir).length);
-                            if (Object.keys(self.checkDir).length <= 0) {
-                                //如果 没有选中任何文件夹则添加在根节点
-                                model.ParentId = 0;
-                            } else {
-                                //在选中的 子节点下添加节点
-                                model.ParentId = self.checkDir.Id;
-                            }
-
-
+                            model.ParentId = pid;
 
                             AjaxPost({
                                 url: "/DocumentUpload/AddDir",
@@ -302,9 +348,8 @@
 
 
                     })
-               
-                },
 
+                },
                 DelDir() {
 
 
@@ -342,7 +387,6 @@
                     });
 
                 },
-
                 UpdateDir() {
                     //修改文件夹
 
@@ -350,7 +394,7 @@
                     bootbox.prompt({
                         size: "small",
                         title: "请输入文件夹名称:",
-                        value: self.checkDir.Dir_Name ,
+                        value: self.checkDir.Dir_Name,
                         callback: function (res) {
 
 
@@ -383,11 +427,9 @@
 
 
                 },
-
                 Search: function () {
                     this.Query();
                 },
-
                 EnterKeyup() {
 
                     document.onkeypress = function (e) {
@@ -399,10 +441,15 @@
                         }
                     };
                 },
+                MenuAddDir() {
 
+                    this.AddDir(self.checkDir.Id);
+
+                },
                 handleNodeClick(data) {
                     console.log(data);
                     self.checkDir = data;
+                    self.InitFile(1);
                 },
                 rightClick(e, data, node, comp) {
                     //设置右键菜单
@@ -421,7 +468,56 @@
                         }
                     }
                 },
+                InitFile(index) {
 
+                    AjaxPost({
+                        url: "/DocumentUpload/ListFile",
+                        data: {
+                            dirid: self.checkDir.Id,
+                            keyword: self.keywork,
+                            pageIndex: index,
+                            pageSize: self.pageModel.pageSize,
+                        },
+                        success: function (result) {
+
+                            console.log(result);
+
+                            if (!result.Success) {
+                                alert_danger(result.Message);
+                                return;
+                            }
+                            self.fileList = result.Content;
+
+                            self.pageModel.pageIndex = result.PageIndex;
+                            self.pageModel.pageSize = result.PageSize;
+                            self.pageModel.TotalCount = result.TotalCount;
+                            self.pageModel.ToTalPage = result.ToTalPage;
+
+                        }
+                    });
+
+                },
+                ShowAddFile() {
+                    $('#modal-default').modal('show');
+
+
+                    $(".el-upload__input").css("display", "none");
+                },
+                DownFile() {
+
+
+                },
+                DelFile() { },
+                SubmitUpload() {
+
+
+                },
+                handleRemove(file, fileList) {
+                    console.log(file, fileList);
+                },
+                handlePreview(file) {
+                    console.log(file);
+                }
 
             }
         });
