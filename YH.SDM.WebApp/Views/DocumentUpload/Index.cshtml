@@ -159,7 +159,7 @@
                                 <th>上传时间</th>
                                 <th>操作</th>
                             </tr>
-                            <tr v-for="(item,index) in fileList">
+                            <tr v-for="(item,index) in documentList">
 
                                 <td><input type="checkbox" name="chk_file" /></td>
                                 <td>{{item.File_Decode_Name}}.{{item.File_Type}}</td>
@@ -214,19 +214,29 @@
                 </div>
                 <div class="modal-body">
 
+                    <el-form ref="form" :model="newData" label-width="80px" label-position="right" size="mini">
+                        <el-form-item label="" prop="name">
 
-                    <el-upload class="upload-demo"
-                               ref="upload"
-                               action="https://jsonplaceholder.typicode.com/posts/"
-                               :on-preview="handlePreview"
-                               :on-remove="handleRemove"
-                               :file-list="uploadfile"
-                               :multiple="true"
-                               :auto-upload="false">
-                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                        <el-button style="margin-left: 10px;" size="small" type="success" @@click="SubmitUpload">上传到服务器</el-button>
 
-                    </el-upload>
+                            <el-upload class="upload-demo"
+                                       ref="upload"
+                                       action=""
+                                       accept=".doc, .docx, .txt, .xlsx, .xls, .mpp, .pptx, .ppt,.jpg,.jpeg,.png"
+                                       :http-request="httpRequest"
+                                       :on-preview="handlePreview"
+                                       :on-remove="handleRemove"
+                                       :on-change="fileChange"
+                                       :on-success="fileUploadSuccess"
+                                       :on-error="fileUploadFail"
+                                       :file-list="fileList"
+                                       multiple
+                                       :auto-upload="false">
+                                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                <el-button style="margin-left: 10px;" size="small" type="success" @@click="SubmitUpload">上传到服务器</el-button>
+
+                            </el-upload>
+                        </el-form-item>
+                    </el-form>
 
                 </div>
                 <div class="modal-footer">
@@ -255,8 +265,13 @@
             el: "#tab",
             data: {
                 dirlist: [],
-                fileList: [],
-                uploadfile: [],
+                documentList: [],
+
+                fileList: [],   //上传文件加载列表
+                uploadfile: [],   //一次性提交多个文件，组装对象
+                file: [],
+                newData: {},
+
                 keywork: "",
 
                 checkDir: {},   //当前选中的文件夹节点
@@ -486,7 +501,7 @@
                                 alert_danger(result.Message);
                                 return;
                             }
-                            self.fileList = result.Content;
+                            self.documentList = result.Content;
 
                             self.pageModel.pageIndex = result.PageIndex;
                             self.pageModel.pageSize = result.PageSize;
@@ -499,8 +514,6 @@
                 },
                 ShowAddFile() {
                     $('#modal-default').modal('show');
-
-
                     $(".el-upload__input").css("display", "none");
                 },
                 DownFile() {
@@ -510,6 +523,35 @@
                 DelFile() { },
                 SubmitUpload() {
 
+                    console.log(this.fileList.length, "上传文件列表");
+
+                    if (this.fileList.length <= 0) {
+                        this.$message.error("请先选择需要上传的文件！");
+                        return false;
+                    }
+
+                    var upData = new FormData();
+                    this.$refs.upload.submit();// 这里是执行文件上传的函数，其实也就是获取我们要上传的文件   
+                    this.file.forEach(function (file) {// 因为要上传多个文件，所以需要遍历
+                        upData.append('file', file, file.name);
+                        // upData.append('file', this.file); //不要直接使用我们的文件数组进行上传，你会发现传给后台的是两个Object
+                    })
+                    upData.append("body", JSON.stringify(this.newData)) // 这里需要转换一下格式传给后台
+
+
+                    let url = "/DocumentUpload/UploadFile";
+
+
+                    axios.post(url, upData).then(function (result) {
+
+                        console.log(result);
+
+                      
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                 
 
                 },
                 handleRemove(file, fileList) {
@@ -517,8 +559,27 @@
                 },
                 handlePreview(file) {
                     console.log(file);
-                }
+                },
+                fileUploadSuccess(response, file, fileList) {
+                    console.log("上传成功");
+                    console.log("成功后回调在这里：", response);
 
+                    this.$refs.upload.clearFiles();   //清空已上传的文件列表
+
+                    //文件上传成功之后，将文件 信息添加到数据库
+
+                },
+                fileUploadFail: function (err, file, fileList) {
+                    console.log("文件上传失败", file, fileList);
+                },
+                fileChange(file, fileList) {
+
+                    this.fileList = fileList;
+                    console.log("选择文件上传成功后显示的内容", file, fileList);
+                },
+                httpRequest(param) {
+                    this.file.push(param.file);// 一般情况下是在这里创建FormData对象，但我们需要上传多个文件，为避免发送多次请求，因此在这里只进行文件的获取，param可以拿到文件上传的所有信息
+                },
             }
         });
 
