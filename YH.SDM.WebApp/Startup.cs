@@ -12,6 +12,7 @@ using log4net;
 using System.IO;
 using log4net.Config;
 using YH.SDM.WebApp.Attribute;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace YH.SDM.WebApp
 {
@@ -59,12 +60,22 @@ namespace YH.SDM.WebApp
             {
                 option.Filters.Add<ExceptionFilter>();
 
-            })
-              .AddNewtonsoftJson(options =>
+            }) .AddNewtonsoftJson(options =>
               {
                   options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                   options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
               });
+
+
+            //现在文件上传单次不超过256M
+            services.Configure<FormOptions>(options =>
+            {
+                // Set the limit to 256 MB
+                options.MultipartBodyLengthLimit = 268435456;
+            });
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
