@@ -61,7 +61,7 @@
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
                                     <input type="text" class="form-control" style="width:auto" v-model="infoItem.OfficeAddress">
                                 </div>
-                                <label class="col-md-2 control-label">定单联系人</label>
+                                <label class="col-md-2 control-label">订单联系人</label>
                                 <div class="col-md-4" style="display: table">
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-edit"></i></span>
                                     <input type="text" class="form-control" style="width:auto" v-model="infoItem.OrderContact">
@@ -173,15 +173,15 @@
                         <div class="form-group">
                             <label class="col-md-3 control-label" style="text-align:center">是否一般纳税人资格</label>
                             <label class="col-md-1">
-                                <input type="radio" name="r3" class="flat-red" style="width:18px;height:18px" checked   v-model="picked" value="是" >
+                                <input type="radio" name="r3" class="flat-red" style="width:18px;height:18px"   value="是"  v-model="infoItem.Taxpayereligibility"  >
                                 <span>是</span>
                             </label>
                             <label class="col-md-1">
-                                <input type="radio" name="r3" style="width:18px;height:18px" class="flat-red" v-model="picked" value="否">
+                                <input type="radio" name="r3" style="width:18px;height:18px" class="flat-red" value="否" v-model="infoItem.Taxpayereligibility" >
                                 <span>否</span>
                             </label>
                             <label class="col-md-1">
-                                <input type="radio" name="r3" style="width:18px;height:18px" class="flat-red" v-model="picked" value="其他">
+                                <input type="radio" name="r3" style="width:18px;height:18px" class="flat-red" value="其他" v-model="infoItem.Taxpayereligibility" >
                                 <span>其他</span>
                             </label>
                         </div>
@@ -211,10 +211,24 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-md-4 control-label">法人身份证复印件 或 被授权人身份证及授权书</label>
-                            <div class="col-md-6" style="display: table">
-                                <input type="file" id="exampleInputFile">
-                            </div>
+                            @*<label class="col-md-4 control-label">法人身份证复印件 或 被授权人身份证及授权书</label>
+        <div class="col-md-3" style="display: table">
+            <input type="file" id="exampleInputFile">
+        </div>*@
+                            <label class="col-md-4 control-label">法人身份证复印件或被授权人身份证及授权书</label>
+                            <el-upload class="upload-demo col-md-3"
+                                       action=""
+                                       :on-preview="handlePreview"
+                                       :on-remove="handleRemove"
+                                       :before-remove="beforeRemove"
+                                       multiple
+                                       :limit="3"
+                                       :on-exceed="handleExceed"
+                                       :file-list="fileList">
+                                <el-button size="small" type="primary" class="col-md-3" style="width:auto">点击上传</el-button>
+                            </el-upload>
+                            
+
 
                         </div>
                         <div class="box-footer">
@@ -256,18 +270,21 @@
                     Account: "",
                     TaxNumber: "",
                     Province: "",
-                    picked:"是"
+                    Taxpayereligibility:"是"
                     //TODO:  1，把属性加全
                 }
             },
             created: function () {
                 self = this;
-
+               
+            },
+            mounted: function () {
+                $(".el-upload__input").hide();
             },
             methods: {
                 Add() {
                     //TODO: 把界面上的为空判断加好，可以使用三方的一些jquery插件。
-
+                    //console.log(self.infoItem.picked, '**************');
                     AjaxPost({
                         url: "/CustomerInfoInput/Add",
                         data: self.infoItem,
@@ -284,6 +301,9 @@
                     })
 
 
+                },
+                AddFile() {
+                    alert("ok")
                 }
             },
         })

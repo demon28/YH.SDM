@@ -1424,6 +1424,8 @@
     <None Include="wwwroot\AdminLte\bower_components\Ionicons\src\woman.svg" />
     <None Include="wwwroot\AdminLte\bower_components\Ionicons\src\wrench.svg" />
     <None Include="wwwroot\AdminLte\bower_components\Ionicons\src\xbox.svg" />
+    <None Include="wwwroot\lib\bootstrap-datepicker\.github\ISSUE_TEMPLATE.md" />
+    <None Include="wwwroot\lib\bootstrap-datepicker\.github\PULL_REQUEST_TEMPLATE.md" />
   </ItemGroup>
 
   <ItemGroup>

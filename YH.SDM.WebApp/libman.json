@@ -26,5 +26,10 @@
       "library": "element-ui@2.13.2",
       "destination": "wwwroot/lib/element-ui/"
     }
-  ]
+  ,
+{
+  "library": "element-ui@2.13.2",
+  "destination": "wwwroot/lib/element-ui/"
+}
+]
 }
