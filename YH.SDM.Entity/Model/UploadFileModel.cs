@@ -8,7 +8,7 @@ namespace YH.SDM.Entity.Model
      public  class UploadFileModel: Tsdm_uploadfile
     {
         public string Upload_UserName { set; get; }
-
+        public string Upload_Directory { get; set; }
 
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Victory.Core.Controller;
+using Victory.Core.Extensions;
 using Victory.Core.Models;
 using YH.EAM.Entity.CodeGenerator;
 using YH.SDM.DataAccess.CodeGenerator;
+using YH.SDM.Entity.CodeGenerator;
 using YH.SDM.Entity.Enums;
 using YH.SDM.Entity.Model;
 using YH.SDM.WebApp.Attribute;
@@ -26,9 +29,12 @@ namespace YH.SDM.WebApp.Controllers
 
         private static IWebHostEnvironment _hostingEnvironment;
 
-        public DocumentUploadController(IWebHostEnvironment hostingEnvironment)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public DocumentUploadController(IWebHostEnvironment hostingEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _hostingEnvironment = hostingEnvironment;
+            _httpContextAccessor = httpContextAccessor;
         }
 
 
@@ -111,7 +117,12 @@ namespace YH.SDM.WebApp.Controllers
                 int userId = int.Parse(userinfo.FindFirst("userId").Value);
 
 
-                var uploadFileRequestList = new List<UploadFileRequest>();
+                var uploadtList = new List<Tsdm_uploadfile>();
+
+                if (formCollection == null)
+                {
+                    return FailMessage("上传失败，未检测上传的文件信息");
+                }
 
                 //FormCollection转化为FormFileCollection
                 var files = (FormFileCollection)formCollection.Files;
@@ -140,17 +151,16 @@ namespace YH.SDM.WebApp.Controllers
                     //判断文件大小
                     var fileSize = formFile.Length;
 
-                    //if (fileSize > 1024 * 1024 * 30) //10M TODO:(1mb=1024X1024b)
-                    //{
-                    //    return new JsonResult(new { isSuccess = false, resultMsg = "上传的文件不能大于30M" });
-                    //}
-
 
                     //保存的文件名称(以名称和保存时间命名)
-                    var saveName = formFile.FileName.Substring(0, formFile.FileName.LastIndexOf('.')) + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
+                    //  var saveName = formFile.FileName.Substring(0, formFile.FileName.LastIndexOf('.')) + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
+
+                    //将文件命名为gui,不存储为文件，数据库中保存真实文件名
+                    var saveName = Guid.NewGuid().ToString();
 
 
-                    //文件保存
+                    
+                    //文件保存  TODO:未加密
                     using (var fs = System.IO.File.Create(webRootPath + filePath + saveName))
                     {
                         formFile.CopyTo(fs);
@@ -160,17 +170,34 @@ namespace YH.SDM.WebApp.Controllers
 
                     //完整的文件路径
                     var completeFilePath = Path.Combine(filePath, saveName);
-                    uploadFileRequestList.Add(new UploadFileRequest()
+
+
+                    uploadtList.Add(new Tsdm_uploadfile()
                     {
-                        FileName = saveName,
-                        FilePath = completeFilePath
+                        Create_Time = DateTime.Now,
+                        Directory_Id=this.Request.Query.First().Value.ToInt(),
+                        File_Decode_Name = formFile.FileName,
+                        File_Encode_Name = saveName,
+                        File_Number = string.Empty,
+                        File_Path = filePath,
+                        File_Size = fileSize,
+                        File_Type = fileExtension,
+                        Isdel = 0,
+                        Status = 0,
+                        Upload_Ip = this._httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString(),   //获取ip地址
+                        Upload_Userid = userId,
+
                     });
+
                 }
 
+                Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
 
-                if (uploadFileRequestList.Any())
+                var list= da.Insert(uploadtList);
+
+                if (list.Count>0)
                 {
-                    return SuccessResult(uploadFileRequestList, "上传文件成功！");
+                    return SuccessResult(uploadtList, "上传文件成功！");
                 }
 
                 return FailMessage();
@@ -183,6 +210,64 @@ namespace YH.SDM.WebApp.Controllers
             }
         }
 
+        [Right(PowerName = "下载文件")]
+        public IActionResult DownLoadFile(int id)
+        {
+
+            Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
+            Tsdm_uploadfile model= da.Select.Where(s => s.Id == id).First();
+
+            string url = _hostingEnvironment.WebRootPath +model.File_Path + model.File_Encode_Name;
+            var stream = System.IO.File.OpenRead(url);
+
+            var provider = new FileExtensionContentTypeProvider();
+            var memi = provider.Mappings[model.File_Type];
+
+
+            //增加系统操作日志
+            var userinfo = (HttpContext.User.Identity as System.Security.Claims.ClaimsIdentity);
+            var userName = userinfo.FindFirst("userName").Value;
+            Tsys_Log_Da logda = new Tsys_Log_Da();
+
+            logda.Insert(new Tsys_Log()
+            {
+                Content = $"用户[{userName}],下载文件：【{model.File_Decode_Name}】! 时间：{DateTime.Now}",
+                Createtime = DateTime.Now,
+                Type = (int)SysLogType.操作日志,
+            });
+
+
+            return File(stream, memi,model.File_Decode_Name);
+
+
+
+        }
+
+        [Right(PowerName = "下载文件")]
+        public IActionResult BatchDownload(List<int> list)
+        {
+            //TODO: 批量下载
+
+            return View();
+        }
+
+
+        [Right(PowerName = "批量删除")]
+        public IActionResult BatchDelFile(List<int> list)
+        {
+            if (list.Count<=0)
+            {
+                return FailMessage("请选择要删除的问题");
+            }
+
+            DataAccess.CodeGenerator.Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
+            if (!da.DeleteFiles(list))
+            {
+                return FailMessage("删除失败！");
+            }
+
+            return SuccessMessage("删除成功！");
+        }
 
         #endregion
 

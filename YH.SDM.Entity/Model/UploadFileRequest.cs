@@ -18,5 +18,7 @@ namespace YH.SDM.Entity.Model
         /// 文件路径
         /// </summary>
         public string FilePath { get; set; }
+
+
     }
 }

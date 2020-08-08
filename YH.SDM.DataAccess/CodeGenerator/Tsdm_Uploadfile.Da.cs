@@ -8,6 +8,7 @@ using Victory.Core.Extensions;
 using Victory.Core.Models;
 using YH.EAM.Entity.CodeGenerator;
 using YH.SDM.Entity.CodeGenerator;
+using YH.SDM.Entity.Enums;
 using YH.SDM.Entity.Model;
 
 namespace YH.SDM.DataAccess.CodeGenerator
@@ -58,29 +59,38 @@ namespace YH.SDM.DataAccess.CodeGenerator
         /// <returns></returns>
         public List<UploadFileModel> ListByDirId(int dirid,string keyword, ref PageModel page) {
 
-            var data = this.Orm.Select<Tsdm_uploadfile, Tsys_User>()
-                        .LeftJoin((tuf, tu) => tuf.Upload_Userid == tu.Id)
-                        .Where((tuf, tu) => tuf.Directory_Id==dirid);
+            var data = this.Orm.Select<Tsdm_uploadfile, Tsys_User,Tsdm_directory>()
+                        .LeftJoin((tuf, tu,td) => tuf.Upload_Userid == tu.Id)
+                        .LeftJoin((tuf, tu, td)=>tuf.Directory_Id==td.Id)
+                        .Where((tuf, tu, td) => tuf.Directory_Id==dirid  && tuf.Isdel==(int)DelStatus.正常) ;
 
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                data = data.Where((tuf, tu) => tuf.File_Decode_Name.Contains(keyword));
+                data = data.Where((tuf, tu, td) => tuf.File_Decode_Name.Contains(keyword));
             }
-
-            
+           
             page.TotalCount = data.Count().ToInt(); 
 
-
             var list = data.Page(page.PageIndex, page.PageSize)
-                .OrderByDescending((tuf, tu) => tuf.Create_Time)
-
-                .ToList((tuf, tu) => new UploadFileModel {  Upload_UserName=tu.Name});
+                .OrderByDescending((tuf, tu, td) => tuf.Create_Time)
+                .ToList((tuf, tu, td) => new UploadFileModel {  Upload_UserName=tu.Name , Upload_Directory=td.Dir_Name});
 
             return list;
         
         }
 
+
+
+        public bool DeleteFiles(List<int> files_id) {
+
+            var list = this.Select
+                      .Where(s=> files_id.Contains(s.Id))
+                       .ToList();
+
+            int count = this.UpdateDiy.WhereDynamic(list).Set(a => a.Isdel, (int)DelStatus.删除).ExecuteAffrows();
+            return count > 0;
+        }
 
     }
 

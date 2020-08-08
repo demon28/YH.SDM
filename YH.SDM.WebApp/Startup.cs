@@ -74,7 +74,8 @@ namespace YH.SDM.WebApp
                 options.MultipartBodyLengthLimit = 268435456;
             });
 
-
+            //注入获取ip地址对象
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         }
 

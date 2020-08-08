@@ -6,7 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="FreeSql" Version="1.7.0" />
-    <PackageReference Include="Victory.Core" Version="1.0.11" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="Victory.Core" Version="1.0.15" />
   </ItemGroup>
 
 </Project>
