@@ -21,91 +21,123 @@
 
 <section class="content" id="tab">
     <div class="row">
-
-        <!-- /.col -->
-        <div>
-            <div class="box">
-                <div class="box-header">
-                    <h3 class="box-title">List</h3>
-
-                    <div class="box-tools">
-
-
-
-                        <div class="input-group input-group-sm hidden-xs  pull-right" style="width: 200px;">
-                            <input type="text" name="table_search" class="form-control pull-right" placeholder="Search" id="txt_Search" v-model="keywork" />
-
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-default " @@click="Search()" id="btn_Search"><i class="fa fa-search"></i></button>
+        <div class="box box-warning">
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="col-md-3 control-label" style="margin-top:8px">开始时间:</label>
+                        <div class="input-group date col-md-5">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
                             </div>
-
+                            <input type="text" class="form-control pull-left" id="datepicker1" readonly>
                         </div>
-
-                        <div class="input-group input-group-sm  pull-right" style="margin-right:10px; width: 200px;">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="col-md-3 control-label" style="margin-top:8px">结束时间:</label>
+                        <div class="input-group date col-md-5">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control pull-left" id="datepicker2" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="col-md-3 control-label" style="margin-top:8px">关键字:</label>
+                        <div class="input-group  hidden-xs  pull-left col-md-4" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control pull-left" placeholder="Search" id="txt_Search" v-model="keywork" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="col-md-2 control-label" style="margin-top:8px">类型:</label>
+                        <div class="input-group   pull-left col-md-4" style="margin-right:10px; width: 150px;">
                             <select class="form-control" v-model="keytype">
-
                                 <option value="0">全部</option>
                                 <option value="1">登录日志</option>
                                 <option value="2">系统异常</option>
-
                             </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default " @@click="Search()" id="btn_Search" style="width:80px"><i class="fa fa-search">查询</i></button>
+                            </div>
                         </div>
 
                     </div>
                     </div>
-                <!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover">
-                        <tbody>
-                            <tr>
-                                <th>Id</th>
-                                <th>类型</th>
-                                <th>内容</th>
-                                <th>时间</th>
-
-                            </tr>
-                            <tr v-for="(item,index) in list">
-                                <td>{{item.Id}}</td>
-                                <td>
-                                    <span class="label label-success" v-if="item.Type==1">用户登录</span>
-                                    <span class="label label-danger" v-if="item.Type==2">系统异常</span>
-                                    <span class="label label-warning" v-if="item.Type==3">系统异常</span>
-                                </td>
-
-                                <td>{{item.Content}}</td>
-                                <td>{{item.Createtime}}</td>
-
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-                <!-- /.box-body -->
-
-
-                <div class="box-footer no-padding">
-                    <div class="card-footer clearfix pull-left" style="margin-left:20px;margin-top:30px;margin-bottom:30px">
-
-                    </div>
-
-                    <div class="card-footer clearfix pull-right " style="margin-right:30px;margin-top:30px;margin-bottom:30px" id="div_page">
-
-                        <zpagenav v-bind:page="pageModel.pageIndex" v-bind:page-size="pageModel.pageSize" v-bind:total="pageModel.TotalCount"
-                                  v-bind:max-page="pageModel.ToTalPage" v-on:pagehandler="Init">
-                        </zpagenav>
-
-                    </div>
-
-
-                    <!-- /.pull-right -->
-                </div>
             </div>
         </div>
+            <!-- /.col -->
+            <div>
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">List</h3>
 
-    </div>
-    <!-- /.col -->
-    <!-- /.row -->
-    <!-- /.modal-dialog -->
+                        @*<div class="box-tools">
+                            
+                            <div class="input-group input-group-sm  pull-right" style="margin-right:10px; width: 200px;">
+                                <select class="form-control" v-model="keytype">
+                                    <option value="0">全部</option>
+                                    <option value="1">登录日志</option>
+                                    <option value="2">系统异常</option>
+                                </select>
+                            </div>
+
+                        </div>*@
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>类型</th>
+                                    <th>内容</th>
+                                    <th>时间</th>
+
+                                </tr>
+                                <tr v-for="(item,index) in list">
+                                    <td>{{item.Id}}</td>
+                                    <td>
+                                        <span class="label label-success" v-if="item.Type==1">用户登录</span>
+                                        <span class="label label-danger" v-if="item.Type==2">系统异常</span>
+                                        <span class="label label-warning" v-if="item.Type==3">系统异常</span>
+                                    </td>
+
+                                    <td>{{item.Content}}</td>
+                                    <td>{{item.Createtime}}</td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+
+
+                    <div class="box-footer no-padding">
+                        <div class="card-footer clearfix pull-left" style="margin-left:20px;margin-top:30px;margin-bottom:30px">
+
+                        </div>
+
+                        <div class="card-footer clearfix pull-right " style="margin-right:30px;margin-top:30px;margin-bottom:30px" id="div_page">
+
+                            <zpagenav v-bind:page="pageModel.pageIndex" v-bind:page-size="pageModel.pageSize" v-bind:total="pageModel.TotalCount"
+                                      v-bind:max-page="pageModel.ToTalPage" v-on:pagehandler="Init">
+                            </zpagenav>
+
+                        </div>
+
+
+                        <!-- /.pull-right -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.col -->
+        <!-- /.row -->
+        <!-- /.modal-dialog -->
 
 
 </section>
@@ -134,7 +166,9 @@
                 },
 
                  keytype: 0,
-                 keywork: ""
+                keywork: "",
+                keybegindate: "",
+                 keyenddate:null
              
 
              
@@ -146,12 +180,31 @@
             },
             mounted() {
                 this.EnterKeyup();
+                //Date picker
+                $('#datepicker1').datepicker({
+                    autoclose: true
+                });
+                $('#datepicker2').datepicker({
+                    autoclose: true
+                });
+                $('#datepicker1').change(function (e) {
+                   // console.log("=======",e);
+
+                    var date = $("#datepicker1").val();
+                    self.keybegindate = date;
+                });
+                $('#datepicker2').change(function (e) {
+                    // console.log("=======",e);
+
+                    var date = $("#datepicker2").val();
+                    self.keyenddate = date;
+                });
             },
             methods: {
 
                 Init: function (index) {
 
-                    console.log("日志类型",self.keytype);
+                    console.log("日志类型=========", self.keydate);
 
                     AjaxPost({
                         url: "/SysLog/List",
@@ -160,6 +213,8 @@
                             pageSize: self.pageModel.pageSize,
                             keyword: self.keywork,
                             keytype: self.keytype,
+                            keybegindate: self.keybegindate,
+                            keyenddate: self.keyenddate,
                         },
                         success: function (result) {
 

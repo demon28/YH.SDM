@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using Victory.Core.Extensions;
@@ -23,28 +24,46 @@ namespace YH.SDM.DataAccess.CodeGenerator
         }
 
 
-        public List<Tsys_Log> ListByWhere(string keyword, SysLogType type, ref PageModel page)
+        public List<Tsys_Log> ListByWhere(string keyword, SysLogType type,DateTime? keybegindate, DateTime? keyenddate,ref PageModel page)
         {
-            var data = this.Select;
+        
+            string sql = @$"select top {page.PageSize} * 
+from (select row_number() 
+over(order by id asc) as rownumber,* 
+from [dbo].[Tsys_Log]) temp_row
+where rownumber>(({page.PageIndex}-1)*  {page.PageSize})  ";
+
+
+            string sql2 = "select count(0)  as [count]  from  [dbo].[Tsys_Log] ";
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                data = data.Where(s => s.Content.Contains(keyword));
+          
+                sql+= @" and Content like  ' %" + keyword + "%'";
+                sql2 += @" and Content like  ' %" + keyword + "%'";
             }
 
             if (type != SysLogType.全部)
-            {
-                data = data.Where(s => s.Type == type.ToInt64());
+            { 
+                sql += @" and  Type = " + type.ToInt64() + "";
+                sql2+= @" and  Type = " + type.ToInt64() + "";
             }
 
-            page.TotalCount = data.Count().ToInt();
+            if (keybegindate.HasValue || keyenddate.HasValue)
+            {
+                sql += @" and  [Createtime] >='"+ keybegindate + "' and  [Createtime] <='"+ keyenddate + "'";
+                sql2 += @" and  [Createtime] >='" + keybegindate + "' and  [Createtime] <='" + keyenddate + "'";
+            }
+            page.TotalCount = this.Orm.Ado.ExecuteDataTable(sql2).Rows[0]["count"].ToInt();
 
-            var list = data.Page(page.PageIndex, page.PageSize)
-                .OrderByDescending(s => s.Createtime)
-                .ToList();
-
+        
+            var list = this.Select.WithSql(sql).ToList();
             return list;
         }
+
+
+
+
 
     }
 
