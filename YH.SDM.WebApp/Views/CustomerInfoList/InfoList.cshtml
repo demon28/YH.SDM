@@ -18,6 +18,178 @@
 
 <section class="content" id="tab">
     <div class="row">
-        
+        <!-- /.col -->
+        <div>
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">List</h3>
+
+                    <div class="box-tools">
+
+
+
+                        <div class="input-group input-group-sm hidden-xs" style="width: 200px;">
+                            <input type="text" name="table_search" class="form-control pull-right" placeholder="Search" id="txt_Search" v-model="keywork" />
+
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default " @@click="Search()" id="btn_Search"><i class="fa fa-search"></i></button>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th>公司名称</th>
+                                <th>法人代表</th>
+
+                                <th>注册地址</th>
+
+
+                                <th>办公地址</th>
+                                <th>订单联系人</th>
+                                <th>联系电话</th>
+                                <th>收货联系人</th>
+
+                                
+                                <th>开票地址</th>
+                                <th>开户银行</th>
+                                <th>是否一般纳税人资格</th>
+
+                            </tr>
+                            <tr v-for="(item,index) in list">
+                                <td>{{item.Companychinese}}</td>
+                                <td>{{item.Thelegalrepresentative}}</td>
+                                <td>{{item.Registeraddress}}</td>
+
+                                <td>{{item.Officeaddress}}</td>
+                                <td>{{item.Ordercontact}}</td>
+                                <td>{{item.Telphone1}}</td>
+                                <td>{{item.Receiptcontact}}</td>
+
+                                
+
+                                <td>
+                                    {{item.Billingaddress}}
+                                </td>
+
+                                <td>
+                                    {{item.Accountbank}}
+                                </td>
+                                <td>{{item.Taxpayereligibility}}</td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+
+
+                <div class="box-footer no-padding">
+                    <div class="card-footer clearfix pull-left" style="margin-left:20px;margin-top:30px;margin-bottom:30px">
+
+                    </div>
+
+                    <div class="card-footer clearfix pull-right " style="margin-right:30px;margin-top:30px;margin-bottom:30px" id="div_page">
+
+                        <zpagenav v-bind:page="pageModel.pageIndex" v-bind:page-size="pageModel.pageSize" v-bind:total="pageModel.TotalCount"
+                                  v-bind:max-page="pageModel.ToTalPage" v-on:pagehandler="Init">
+                        </zpagenav>
+
+                    </div>
+
+
+                    <!-- /.pull-right -->
+                </div>
+            </div>
+        </div>
+
     </div>
+    <!-- /.col -->
+    <!-- /.row -->
+    <!-- /.modal-dialog -->
+
+
 </section>
+@section scripts{
+
+
+    <script>
+        var self;
+        var vm2 = new Vue({
+            el: "#tab",
+            data: {
+                list: [],
+                pageModel: {
+                    pageIndex: 1,
+                    pageSize: 10,
+                    TotalCount: 0,
+                    ToTalPage: 0,
+                },
+                keywork: ""
+            },
+            created: function () {
+                self = this;
+
+                this.Init(1);
+            },
+            mounted() {
+                this.EnterKeyup();
+            },
+            methods: {
+
+                Init: function (index) {
+
+                    console.log(self);
+
+                    AjaxPost({
+                        url: "/CustomerInfoList/List",
+                        data: {
+                            pageIndex: index,
+                            pageSize: self.pageModel.pageSize,
+                            keyword: self.keywork,
+                        },
+                        success: function (result) {
+
+                            console.log(result);
+
+                            if (!result.Success) {
+                                alert_info(result.Message);
+                            }
+
+                            self.list = result.Content;
+
+                            self.pageModel.pageIndex = result.PageIndex;
+                            self.pageModel.pageSize = result.PageSize;
+                            self.pageModel.TotalCount = result.TotalCount;
+                            self.pageModel.ToTalPage = result.ToTalPage;
+                        }
+                    })
+                },
+                Search: function () {
+                    this.Init(1);
+                },
+                EnterKeyup() {
+                    var _self = this;
+                    document.onkeypress = function (e) {
+                        var keycode = document.all ? event.keyCode : e.which;
+
+                        if (keycode == 13) {
+                            self.Init(1);
+                            return false;
+                        }
+                    };
+                },
+            },
+
+        })
+
+    </script>
+}

@@ -29,7 +29,7 @@ namespace YH.SDM.DataAccess.CodeGenerator
 
             if(!string.IsNullOrEmpty(keyword))
             {
-             data= data.Where(s => s.Companychinese.Contains(keyword) || s.Companyenglish.Contains(keyword) );
+             data= data.Where(s => s.Companychinese.Contains(keyword) || s.Thelegalrepresentative.Contains(keyword) );
             }
 
             page.TotalCount = data.Count().ToInt();
