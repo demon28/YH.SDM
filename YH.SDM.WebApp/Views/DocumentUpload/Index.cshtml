@@ -140,7 +140,7 @@
 
 
                         <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-                            <button type="button" class="btn btn-sm pull-right bg-red" @@click="DelFile()" >  <i class="fa fa-trash-o"></i> 批量删除</button>
+                            <button type="button" class="btn btn-sm pull-right bg-red" @@click="BatchDeleteFile()" >  <i class="fa fa-trash-o"></i> 批量删除</button>
                         </div>
 
                         <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
@@ -158,7 +158,7 @@
                     <table class="table table-hover" v-if="fileViewModel" id="tab_file">
                         <tbody>
                             <tr>
-                                <th><input type="checkbox"  id="chk_all"  @@click="OnAllCheck(this)" /></th>
+                                <th><input type="checkbox"  id="chk_all"  @@click="OnAllCheck()" /></th>
                                 <th>文件名</th>
                                 <th>发布人</th>
                                 <th>上传时间</th>
@@ -167,7 +167,7 @@
                             </tr>
                             <tr v-for="(item,index) in documentList">
 
-                                <td><input type="checkbox" name="chk_file" /></td>
+                                <td><input type="checkbox" name="chk_file"  :id="item.Id"  @@click="OnFileCheck()" /></td>
                                 <td>{{item.File_Decode_Name}}</td>
                                 <td>{{item.Upload_UserName}}</td>
                                 <td>{{item.Create_Time}}</td>
@@ -188,7 +188,7 @@
                         <div  class="col-md-2" v-for="(item,index) in documentList">
 
                             <div style="margin:10px,10px,10px,10px;padding:10px;text-align:center">
-                                <img :src="FileTypeImage(item.File_Type)" style="margin:auto 0;padding:10px" width="100" height="110" />
+                                <img :src="FileTypeImage(item.File_Type)" style="margin:auto 0;padding:10px" width="80" height="80" />
                                 <div style="text-align:center">
                                     <lable>{{item.File_Decode_Name}}</lable>
                                 </div>
@@ -293,10 +293,12 @@
                 file: [],
                 newData: {},
 
+                checkList: [],
+
                 keywork: "",
 
                 checkDir: {},   //当前选中的文件夹节点
-                tmDisplay: false,
+                tmDisplay: false,   //是否显示右键菜单
                 defaultProps: {
                     children: 'Childs',
                     label: 'Dir_Name'
@@ -464,7 +466,7 @@
 
 
                 },
-                Search: function () {
+                Search() {
                     this.Query();
                 },
                 EnterKeyup() {
@@ -541,7 +543,33 @@
                 DownFile(item) {
                     window.location.href = "/DocumentUpload/DownLoadFile?id=" + item.Id;
                 },
-                DelFile() { },
+                DelFile(item) {
+
+                    AjaxPost({
+                        url: "/DocumentUpload/DelFile",
+                        data: {
+                            id: item.Id,
+                         
+                        },
+                        success: function (result) {
+
+                            console.log(result);
+
+                            if (!result.Success) {
+                                alert_danger(result.Message);
+                                return;
+                            }
+
+                            alert_success(result.Message);
+                            self.InitFile(self.pageModel.pageIndex);
+
+                            // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
+                            self.OnFileCheck();
+                        }
+                    });
+
+
+                },
                 SubmitUpload() {
 
                     console.log(this.fileList.length, "上传文件列表");
@@ -614,19 +642,59 @@
                 
                     return FileType2Image(type);
                 },
-                OnAllCheck(chk) {
+                OnFileCheck() {
+                    var files = $("#tab_file td :checkbox");
+                    self.checkList = [];
+                    $.each(files, function (index, value) {
+
+                        if (files[index].checked) {
+
+                            let model = {};
+                            model.id = files[index].id;
+                            self.checkList.push(model);
+
+                        }
+
+                    });
+
+                },
+                OnAllCheck() {
               
                     if ($("#chk_all")[0].checked) {
-                        $("#tab_file td :checkbox").prop("checked", true);
+                      var files=  $("#tab_file td :checkbox");
+                      files.prop("checked", true);
+
+                        $.each(files, function (index, value) {
+
+                            let model = {};
+                            model.id = files[index].id
+
+                            self.checkList.push(model);
+
+                        });
+
+
                     } else {
                         $("#tab_file td :checkbox").prop("checked", false);
+
+                        self.checkList = [];
                     }
                   
                 },
                 BatchDownload() {
                     
 
-                }
+                },
+                BatchDeleteFile() {
+                    console.log("选中的集合", self.checkList);
+
+
+
+
+                    // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
+                    self.OnFileCheck();
+                  
+                },
             }
         });
 

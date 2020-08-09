@@ -75,7 +75,7 @@ namespace YH.SDM.WebApp
             });
 
             //注入获取ip地址对象
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+           services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         }
 

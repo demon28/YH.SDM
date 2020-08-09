@@ -93,7 +93,11 @@ namespace YH.SDM.WebApp.Controllers
         {
             Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
 
-            if (da.Delete(s => s.Id == id) > 0)
+            Tsdm_uploadfile model= da.Select.Where(s => s.Id == id).ToOne();
+
+            model.Isdel = (int)DelStatus.删除;
+
+            if (da.Update(model) > 0)
             {
                 return SuccessMessage("已删除！");
 
