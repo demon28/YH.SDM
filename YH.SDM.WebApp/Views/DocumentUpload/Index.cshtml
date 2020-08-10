@@ -130,17 +130,17 @@
 
                     <div class="box-tools">
 
-                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;"  v-if="fileViewModel">
+                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;" v-if="fileViewModel">
                             <button type="button" class="btn btn-sm pull-right bg-blue" @@click="FileViewChange()">  <i class="fa fa-windows"></i> 网格视图</button>
                         </div>
 
                         <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;" v-if="!fileViewModel">
-                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="FileViewChange()" >  <i class="fa fa-list-ol"></i> 列表视图</button>
+                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="FileViewChange()">  <i class="fa fa-list-ol"></i> 列表视图</button>
                         </div>
 
 
                         <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-                            <button type="button" class="btn btn-sm pull-right bg-red" @@click="BatchDeleteFile()" >  <i class="fa fa-trash-o"></i> 批量删除</button>
+                            <button type="button" class="btn btn-sm pull-right bg-red" @@click="BatchDeleteFile()">  <i class="fa fa-trash-o"></i> 批量删除</button>
                         </div>
 
                         <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
@@ -148,7 +148,7 @@
                         </div>
 
                         <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="ShowAddFile()" >  <i class="fa fa-upload"></i> 上传</button>
+                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="ShowAddFile()">  <i class="fa fa-upload"></i> 上传</button>
                         </div>
                     </div>
 
@@ -158,7 +158,7 @@
                     <table class="table table-hover" v-if="fileViewModel" id="tab_file">
                         <tbody>
                             <tr>
-                                <th><input type="checkbox"  id="chk_all"  @@click="OnAllCheck()" /></th>
+                                <th><input type="checkbox" id="chk_all" @@click="OnAllCheck()" /></th>
                                 <th>文件名</th>
                                 <th>发布人</th>
                                 <th>上传时间</th>
@@ -167,14 +167,14 @@
                             </tr>
                             <tr v-for="(item,index) in documentList">
 
-                                <td><input type="checkbox" name="chk_file"  :id="item.Id"  @@click="OnFileCheck()" /></td>
+                                <td><input type="checkbox" name="chk_file" :id="item.Id" @@click="OnFileCheck()" /></td>
                                 <td>{{item.File_Decode_Name}}</td>
                                 <td>{{item.Upload_UserName}}</td>
                                 <td>{{item.Create_Time}}</td>
                                 <td>{{item.Upload_Directory==null?"根目录":item.Upload_Directory}}</td>
                                 <td>
                                     <button type="button" class="btn bg-blue  btn-xs" v-on:click="DownFile(item)">下载</button>
-                                       &nbsp;
+                                    &nbsp;
                                     <button type="button" class="btn bg-red  btn-xs" v-on:click="DelFile(item)">删除</button>
                                 </td>
                             </tr>
@@ -184,8 +184,8 @@
 
 
 
-                    <div class="col-md-12"  v-if="!fileViewModel">
-                        <div  class="col-md-2" v-for="(item,index) in documentList">
+                    <div class="col-md-12" v-if="!fileViewModel">
+                        <div class="col-md-2" v-for="(item,index) in documentList">
 
                             <div style="margin:10px,10px,10px,10px;padding:10px;text-align:center">
                                 <img :src="FileTypeImage(item.File_Type)" style="margin:auto 0;padding:10px" width="80" height="80" />
@@ -198,7 +198,7 @@
                     </div>
 
 
-                  
+
 
                 </div>
                 <!-- /.box-body -->
@@ -248,7 +248,6 @@
                                        :on-preview="handlePreview"
                                        :on-remove="handleRemove"
                                        :on-change="fileChange"
-                                       
                                        :file-list="fileList"
                                        multiple
                                        :auto-upload="false">
@@ -277,7 +276,7 @@
 
 
 @section scripts{
- 
+
     <script>
 
         var self;
@@ -309,9 +308,9 @@
                     TotalCount: 0,
                     ToTalPage: 0,
                 },
-              
 
-                fileViewModel:true,    //文件视图模式，默认true，为table   
+
+                fileViewModel: true,    //文件视图模式，默认true，为table
 
             },
             created: function () {
@@ -545,29 +544,40 @@
                 },
                 DelFile(item) {
 
-                    AjaxPost({
-                        url: "/DocumentUpload/DelFile",
-                        data: {
-                            id: item.Id,
-                         
-                        },
-                        success: function (result) {
+                    bootbox.confirm({
+                        size: "small",
+                        message: "您确定删除改文件吗?",
+                        centerVertical: true,
+                        callback: function (res) {
 
-                            console.log(result);
-
-                            if (!result.Success) {
-                                alert_danger(result.Message);
+                            if (!res) {
                                 return;
                             }
 
-                            alert_success(result.Message);
-                            self.InitFile(self.pageModel.pageIndex);
+                            AjaxPost({
+                                url: "/DocumentUpload/DelFile",
+                                data: {
+                                    id: item.Id,
 
-                            // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
-                            self.OnFileCheck();
+                                },
+                                success: function (result) {
+
+                                    console.log(result);
+
+                                    if (!result.Success) {
+                                        alert_danger(result.Message);
+                                        return;
+                                    }
+
+                                    alert_success(result.Message);
+                                    self.InitFile(self.pageModel.pageIndex);
+
+                                    // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
+                                    self.OnFileCheck();
+                                }
+                            });
                         }
                     });
-
 
                 },
                 SubmitUpload() {
@@ -580,7 +590,7 @@
                     }
 
                     var upData = new FormData();
-                    this.$refs.upload.submit();// 这里是执行文件上传的函数，其实也就是获取我们要上传的文件   
+                    this.$refs.upload.submit();// 这里是执行文件上传的函数，其实也就是获取我们要上传的文件
                     this.file.forEach(function (file) {// 因为要上传多个文件，所以需要遍历
                         upData.append('file', file, file.name);
                         // upData.append('file', this.file); //不要直接使用我们的文件数组进行上传，你会发现传给后台的是两个Object
@@ -594,13 +604,13 @@
                     axios.post(url, upData).then(function (result) {
 
                         console.log(result);
-                        
+
                         if (!result.data.Success) {
                             alert_danger(result.data.Message);
                             return;
                         }
                         alert_info("上传成功！");
-                   
+
                         self.fileList = [];  //清空文件列表。
 
                         $('#modal-default').modal('hide');  //关闭模态框
@@ -612,10 +622,10 @@
                     });
 
 
-                
 
 
-                 
+
+
 
                 },
                 handleRemove(file, fileList) {
@@ -639,7 +649,7 @@
                 },
                 FileTypeImage(type) {
 
-                
+
                     return FileType2Image(type);
                 },
                 OnFileCheck() {
@@ -659,10 +669,10 @@
 
                 },
                 OnAllCheck() {
-              
+
                     if ($("#chk_all")[0].checked) {
-                      var files=  $("#tab_file td :checkbox");
-                      files.prop("checked", true);
+                        var files = $("#tab_file td :checkbox");
+                        files.prop("checked", true);
 
                         $.each(files, function (index, value) {
 
@@ -679,21 +689,99 @@
 
                         self.checkList = [];
                     }
-                  
+
                 },
                 BatchDownload() {
-                    
+                    console.log("选中的集合", self.checkList);
+                    if (self.checkList.length <= 0) {
+
+                        alert_danger("请勾选您要下载的文件！");
+                        return;
+                    }
+
+                    var array="";
+                    for (var item of self.checkList) {
+                        array += item.id;
+                        array +=","
+                    }
+
+                    array = array.substring(0, array.lastIndexOf(','));
+
+                    console.log(array);
+
+                    AjaxPost({
+                        url: "/DocumentUpload/BatchDownload",
+                        data: { ids: array },
+                        success: function (result) {
+
+                            console.log(result);
+
+                            if (!result.Success) {
+                                alert_danger(result.Message);
+                                return;
+                            }
+
+                            window.location.href = result.Content;
+
+                        }
+                    });
+
+
 
                 },
                 BatchDeleteFile() {
+
                     console.log("选中的集合", self.checkList);
 
+                    if (self.checkList.length <= 0) {
+
+                        alert_danger("请勾选您要删除的文件！");
+                        return;
+                    }
 
 
+                    bootbox.confirm({
+                        size: "small",
+                        message: "您确定删除改文件吗?",
+                        centerVertical: true,
+                        callback: function (res) {
 
-                    // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
-                    self.OnFileCheck();
-                  
+                            if (!res) {
+                                return;
+                            }
+
+                            var array = [];
+                            for (var item of self.checkList) {
+                                array.push(parseInt(item.id));
+                            }
+
+                            console.log("=====", array);
+
+                            $.ajax({
+                                url: "/DocumentUpload/BatchDelFile",
+                                data: { "ids": array },
+                                type: "post",
+                                success: function (result) {
+
+                                    console.log(result);
+
+                                    if (!result.Success) {
+                                        alert_danger(result.Message);
+                                        return;
+                                    }
+                                    alert_success(result.Message);
+                                    self.InitFile(self.pageModel.pageIndex);
+
+
+                                    // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
+                                    self.OnFileCheck();
+                                }
+
+                            });
+
+                        }
+                    });
+
                 },
             }
         });

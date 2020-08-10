@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ICSharpCode.SharpZipLib.Checksum;
+using ICSharpCode.SharpZipLib.Zip;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Victory.Core.Controller;
 using Victory.Core.Extensions;
@@ -93,7 +96,7 @@ namespace YH.SDM.WebApp.Controllers
         {
             Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
 
-            Tsdm_uploadfile model= da.Select.Where(s => s.Id == id).ToOne();
+            Tsdm_uploadfile model = da.Select.Where(s => s.Id == id).ToOne();
 
             model.Isdel = (int)DelStatus.删除;
 
@@ -163,7 +166,7 @@ namespace YH.SDM.WebApp.Controllers
                     var saveName = Guid.NewGuid().ToString();
 
 
-                    
+
                     //文件保存  TODO:未加密
                     using (var fs = System.IO.File.Create(webRootPath + filePath + saveName))
                     {
@@ -179,7 +182,7 @@ namespace YH.SDM.WebApp.Controllers
                     uploadtList.Add(new Tsdm_uploadfile()
                     {
                         Create_Time = DateTime.Now,
-                        Directory_Id=this.Request.Query.First().Value.ToInt(),
+                        Directory_Id = this.Request.Query.First().Value.ToInt(),
                         File_Decode_Name = formFile.FileName,
                         File_Encode_Name = saveName,
                         File_Number = string.Empty,
@@ -197,9 +200,9 @@ namespace YH.SDM.WebApp.Controllers
 
                 Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
 
-                var list= da.Insert(uploadtList);
+                var list = da.Insert(uploadtList);
 
-                if (list.Count>0)
+                if (list.Count > 0)
                 {
                     return SuccessResult(uploadtList, "上传文件成功！");
                 }
@@ -219,9 +222,9 @@ namespace YH.SDM.WebApp.Controllers
         {
 
             Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
-            Tsdm_uploadfile model= da.Select.Where(s => s.Id == id).First();
+            Tsdm_uploadfile model = da.Select.Where(s => s.Id == id).First();
 
-            string url = _hostingEnvironment.WebRootPath +model.File_Path + model.File_Encode_Name;
+            string url = _hostingEnvironment.WebRootPath + model.File_Path + model.File_Encode_Name;
             var stream = System.IO.File.OpenRead(url);
 
             var provider = new FileExtensionContentTypeProvider();
@@ -241,31 +244,109 @@ namespace YH.SDM.WebApp.Controllers
             });
 
 
-            return File(stream, memi,model.File_Decode_Name);
+            return File(stream, memi, model.File_Decode_Name);
 
 
 
         }
 
-        [Right(PowerName = "下载文件")]
-        public IActionResult BatchDownload(List<int> list)
+        [Right(PowerName = "批量下载")]
+        public IActionResult BatchDownload(string ids)
         {
-            //TODO: 批量下载
+            string[] snumber= ids.Split(',');
 
-            return View();
+            int[] idss = Array.ConvertAll(snumber, int.Parse);
+
+            if (idss.Length <= 0)
+            {
+                return FailMessage("请选择您要下载的文件！");
+            }
+
+            //获取文件集合
+            Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
+            List<Tsdm_uploadfile> files = da.Select.Where(s => idss.Contains(s.Id)).ToList();
+
+            //获取系统根目录
+            var webRootPath = _hostingEnvironment.WebRootPath;
+
+            //拿到用户id
+            var userinfo = (HttpContext.User.Identity as System.Security.Claims.ClaimsIdentity);
+            int userId = int.Parse(userinfo.FindFirst("userId").Value);
+            string userName = userinfo.FindFirst("userName").Value;
+
+
+            //创建并 确定文件===“下载”=====路径
+            var fileDownLoadPath = "/FileDownload/Project/" + userId + "/";
+
+            if (!Directory.Exists(webRootPath + fileDownLoadPath))
+            {
+                Directory.CreateDirectory(webRootPath + fileDownLoadPath);
+            }
+
+            string downloadurl = fileDownLoadPath + DateTime.Now.ToString("yyyyMMddhhmmss") + ".zip";
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"用户{userName}下载如下文件：");
+
+            using (ZipOutputStream zip = new ZipOutputStream(System.IO.File.Create(webRootPath + downloadurl)))
+            {
+                Crc32 crc = new Crc32();
+                zip.SetLevel(1);  //不缺时间就用9，缺时间不缺空间用0.
+
+                //打包压缩
+                foreach (var file in files)
+                {
+                    sb.Append(file.File_Decode_Name);
+
+
+                    string url = _hostingEnvironment.WebRootPath + file.File_Path + file.File_Encode_Name;  //拿出当前文件地址
+                    var fs = System.IO.File.OpenRead(url);
+
+                    byte[] buffer = new byte[fs.Length];
+
+                    fs.Read(buffer, 0, buffer.Length);
+
+                    ZipEntry entry = new ZipEntry(Path.GetFileName(file.File_Decode_Name))
+                    {
+
+                        DateTime = file.Create_Time,
+                        Size = fs.Length,
+                    };
+                    fs.Close();
+                    crc.Reset();
+                    crc.Update(buffer);
+                    entry.Crc = crc.Value;
+                    zip.PutNextEntry(entry);
+                    zip.Write(buffer, 0, buffer.Length);
+
+                }
+            }
+
+            //写系统操作日志
+            Tsys_Log_Da logda = new Tsys_Log_Da();
+            logda.Insert(new Tsys_Log()
+            {
+                Content = sb.ToString(),
+                Createtime = DateTime.Now,
+                Type = (int)SysLogType.操作日志,
+            });
+
+            return SuccessResult(downloadurl);
+
         }
 
 
         [Right(PowerName = "批量删除")]
-        public IActionResult BatchDelFile(List<int> list)
+        [HttpPost]
+        public IActionResult BatchDelFile(List<int> ids)
         {
-            if (list.Count<=0)
+            if (ids.Count <= 0)
             {
-                return FailMessage("请选择要删除的问题");
+                return FailMessage("请选择要删除的文件");
             }
 
             DataAccess.CodeGenerator.Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
-            if (!da.DeleteFiles(list))
+            if (!da.DeleteFiles(ids))
             {
                 return FailMessage("删除失败！");
             }
