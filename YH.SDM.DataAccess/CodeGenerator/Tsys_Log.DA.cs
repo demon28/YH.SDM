@@ -62,7 +62,40 @@ where rownumber>(({page.PageIndex}-1)*  {page.PageSize})  ";
         }
 
 
+        public List<Tsys_Log> ListByCondition(string keyword, SysLogType type, DateTime? keybegindate, DateTime? keyenddate, ref PageModel page)
+        {
 
+            var data = this.Select;
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                data = data.Where(s => s.Content.Contains(keyword));
+            }
+
+            if (type != SysLogType.全部)
+            {
+                data = data.Where(s => s.Type == (int)type);
+            }
+
+            if (keybegindate.HasValue)
+            {
+                data = data.Where(s => s.Createtime > keybegindate);
+            }
+
+            if (keyenddate.HasValue)
+            {
+                data = data.Where(s => s.Createtime < keyenddate);
+            }
+
+            page.TotalCount = data.Count().ToInt();
+
+            var list = data.Page(page.PageIndex, page.PageSize)
+              .OrderByDescending(s => s.Createtime)
+              .ToList();
+
+            return list;
+
+        }
 
 
     }

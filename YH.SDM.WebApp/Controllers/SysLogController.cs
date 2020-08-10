@@ -35,7 +35,7 @@ namespace YH.SDM.WebApp.Controllers
 
 
             Tsys_Log_Da da = new Tsys_Log_Da();
-            var list = da.ListByWhere(keyword, (SysLogType)keytype, keybegindate, keyenddate, ref page);
+            var list = da.ListByCondition(keyword, (SysLogType)keytype, keybegindate, keyenddate, ref page);
 
 
             return SuccessResultList(list, page);

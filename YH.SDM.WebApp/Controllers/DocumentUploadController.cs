@@ -306,7 +306,7 @@ namespace YH.SDM.WebApp.Controllers
                 //打包压缩
                 foreach (var file in files)
                 {
-                    sb.Append(file.File_Decode_Name);
+                    sb.Append("{"+file.File_Decode_Name+"},");
 
 
                     string url = _hostingEnvironment.WebRootPath + file.File_Path + file.File_Encode_Name;  //拿出当前文件地址
