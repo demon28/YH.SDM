@@ -34,13 +34,13 @@ from [dbo].[Tsys_Log]) temp_row
 where rownumber>(({page.PageIndex}-1)*  {page.PageSize})  ";
 
 
-            string sql2 = "select count(0)  as [count]  from  [dbo].[Tsys_Log] ";
+            string sql2 = "select count(0)  as [count]  from  [dbo].[Tsys_Log]  where 1=1";
 
             if (!string.IsNullOrEmpty(keyword))
             {
           
                 sql+= @" and Content like  ' %" + keyword + "%'";
-                sql2 += @" and Content like  ' %" + keyword + "%'";
+                sql2 += @"  and  Content like  ' %" + keyword + "%'";
             }
 
             if (type != SysLogType.全部)
