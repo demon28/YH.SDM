@@ -31,21 +31,24 @@ namespace YH.SDM.DataAccess.CodeGenerator
         /// <param name="keyword"></param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public List<Tsdm_uploadfile> ListByWhere(string keyword, ref PageModel page) {
+        public List<UploadFileModel> ListByWhere(string keyword, ref PageModel page) {
 
-            var data =this.Select;
+            var data = this.Orm.Select<Tsdm_uploadfile, Tsys_User, Tsdm_directory>()
+                      .LeftJoin((tuf, tu, td) => tuf.Upload_Userid == tu.Id)
+                      .LeftJoin((tuf, tu, td) => tuf.Directory_Id == td.Id)
+                      .Where((tuf, tu, td) =>  tuf.Isdel == (int)DelStatus.正常);
 
-            if(!string.IsNullOrEmpty(keyword))
+
+            if (!string.IsNullOrEmpty(keyword))
             {
-               data= data.Where(s => s.File_Decode_Name.Contains(keyword));
+                data = data.Where((tuf, tu, td) => tuf.File_Decode_Name.Contains(keyword));
             }
 
             page.TotalCount = data.Count().ToInt();
-          
 
             var list = data.Page(page.PageIndex, page.PageSize)
-                .OrderBy(s => s.Create_Time)
-                .ToList();
+                .OrderByDescending((tuf, tu, td) => tuf.Create_Time)
+                .ToList((tuf, tu, td) => new UploadFileModel { Upload_UserName = tu.Name, Upload_Directory = td.Dir_Name });
 
             return list;
         }

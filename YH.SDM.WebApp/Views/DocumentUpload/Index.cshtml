@@ -60,212 +60,226 @@
 
 
 <section class="content" id="tab">
-    <div class="row">
-
-        <!-- /.col -->
-        <div class="col-md-3">
-            <div class="box box-primary">
-                <div class="box-header">
-                    <h3 class="box-title">菜单</h3>
-
-                    <div class="box-tools">
-
-                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-
-                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="AddDir()" id="btn_Search">   <i class="fa fa-align-justify"></i> 创建根目录</button>
-                        </div>
-
-                    </div>
-                </div>
-                <!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-
-                    <el-tree :data="dirlist"
-                             :props="defaultProps"
-                             node-key="id"
-                             default-expand-all
-                             :expand-on-click-node="false"
-                             @@node-click="handleNodeClick"
-                             @@node-contextmenu="rightClick"></el-tree>
-
-                    <div id="perTreeMenu" v-if="tmDisplay" class="tree_menu" :style="{...rightMenu}">
-                        <ul>
-                            <li @@click="MenuAddDir()">
-                                <i class="el-icon-tickets"></i> 新建
-                            </li>
-                            <li @@click="UpdateDir()">
-                                <i class="el-icon-edit"></i> 编辑
-                            </li>
-                            <li @@click="DelDir()">
-                                <i class="el-icon-delete"></i> 删除
-                            </li>
-                        </ul>
-                    </div>
 
 
-                </div>
-                <!-- /.box-body -->
+        <div class="row" style="margin-top:10px">
 
+            <!-- /.col -->
+            <div class="col-md-3">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h3 class="box-title">菜单</h3>
 
-                <div class="box-footer no-padding">
-                    <div class="card-footer clearfix pull-left" style="margin-left:20px;margin-top:30px;margin-bottom:30px">
+                        <div class="box-tools">
 
-                    </div>
+                            <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
 
-
-
-                    <!-- /.pull-right -->
-                </div>
-            </div>
-        </div>
-
-
-
-
-        <!-- /.col -->
-        <div class="col-md-9">
-            <div class="box box-success">
-                <div class="box-header">
-                    <h3 class="box-title">{{checkDir.Dir_Name}}</h3>
-
-                    <div class="box-tools">
-
-                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;" v-if="fileViewModel">
-                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="FileViewChange()">  <i class="fa fa-windows"></i> 网格视图</button>
-                        </div>
-
-                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;" v-if="!fileViewModel">
-                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="FileViewChange()">  <i class="fa fa-list-ol"></i> 列表视图</button>
-                        </div>
-
-
-                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-                            <button type="button" class="btn btn-sm pull-right bg-red" @@click="BatchDeleteFile()">  <i class="fa fa-trash-o"></i> 批量删除</button>
-                        </div>
-
-                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="BatchDownload()">  <i class="fa fa-download"></i> 批量下载</button>
-                        </div>
-
-                        <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
-                            <button type="button" class="btn btn-sm pull-right bg-blue" @@click="ShowAddFile()">  <i class="fa fa-upload"></i> 上传</button>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- /.box-header -->
-                <div class="box-body table-responsive no-padding">
-                    <table class="table table-hover" v-if="fileViewModel" id="tab_file">
-                        <tbody>
-                            <tr>
-                                <th><input type="checkbox" id="chk_all" @@click="OnAllCheck()" /></th>
-                                <th>文件名</th>
-                                <th>发布人</th>
-                                <th>上传时间</th>
-                                <th>归属目录</th>
-                                <th>操作</th>
-                            </tr>
-                            <tr v-for="(item,index) in documentList">
-
-                                <td><input type="checkbox" name="chk_file" :id="item.Id" @@click="OnFileCheck()" /></td>
-                                <td>{{item.File_Decode_Name}}</td>
-                                <td>{{item.Upload_UserName}}</td>
-                                <td>{{item.Create_Time}}</td>
-                                <td>{{item.Upload_Directory==null?"根目录":item.Upload_Directory}}</td>
-                                <td>
-                                    <button type="button" class="btn bg-blue  btn-xs" v-on:click="DownFile(item)">下载</button>
-                                    &nbsp;
-                                    <button type="button" class="btn bg-red  btn-xs" v-on:click="DelFile(item)">删除</button>
-                                </td>
-                            </tr>
-
-                        </tbody>
-                    </table>
-
-
-
-                    <div class="col-md-12" v-if="!fileViewModel">
-                        <div class="col-md-2" v-for="(item,index) in documentList">
-
-                            <div style="margin:10px,10px,10px,10px;padding:10px;text-align:center">
-                                <img :src="FileTypeImage(item.File_Type)" style="margin:auto 0;padding:10px" width="80" height="80" />
-                                <div style="text-align:center">
-                                    <lable>{{item.File_Decode_Name}}</lable>
-                                </div>
+                                <button type="button" class="btn btn-sm pull-right bg-blue" @@click="AddDir()" id="btn_Search">   <i class="fa fa-align-justify"></i> 创建根目录</button>
                             </div>
 
                         </div>
                     </div>
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive no-padding">
 
+                        <el-tree :data="dirlist"
+                                 :props="defaultProps"
+                                 node-key="id"
+                                 default-expand-all
+                                 :expand-on-click-node="false"
+                                 @@node-click="handleNodeClick"
+                                 @@node-contextmenu="rightClick"></el-tree>
 
+                        <div id="perTreeMenu" v-if="tmDisplay" class="tree_menu" :style="{...rightMenu}">
+                            <ul>
+                                <li @@click="MenuAddDir()">
+                                    <i class="el-icon-tickets"></i> 新建
+                                </li>
+                                <li @@click="UpdateDir()">
+                                    <i class="el-icon-edit"></i> 编辑
+                                </li>
+                                <li @@click="DelDir()">
+                                    <i class="el-icon-delete"></i> 删除
+                                </li>
+                            </ul>
+                        </div>
 
-
-                </div>
-                <!-- /.box-body -->
-
-
-                <div class="box-footer no-padding">
-                    <div class="card-footer clearfix pull-left" style="margin-left:20px;margin-top:30px;margin-bottom:30px">
 
                     </div>
+                    <!-- /.box-body -->
 
-                    <div class="card-footer clearfix pull-right " style="margin-right:30px;margin-top:30px;margin-bottom:30px" id="div_page">
-                        <zpagenav v-bind:page="pageModel.pageIndex" v-bind:page-size="pageModel.pageSize" v-bind:total="pageModel.TotalCount"
-                                  v-bind:max-page="pageModel.ToTalPage" v-on:pagehandler="InitFile">
-                        </zpagenav>
+
+                    <div class="box-footer no-padding">
+                        <div class="card-footer clearfix pull-left" style="margin-left:20px;margin-top:30px;margin-bottom:30px">
+
+                        </div>
+
+
+
+                        <!-- /.pull-right -->
                     </div>
-
-
-                    <!-- /.pull-right -->
                 </div>
             </div>
+
+
+
+
+            <!-- /.col -->
+            <div class="col-md-9">
+                <div class="box box-success">
+                    <div class="box-header">
+                        <h3 class="box-title">{{checkDir.Dir_Name}}</h3>
+
+                        <div class="box-tools">
+
+                            <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;" v-if="fileViewModel">
+                                <button type="button" class="btn btn-sm pull-right bg-blue" @@click="FileViewChange()">  <i class="fa fa-windows"></i> 网格视图</button>
+                            </div>
+
+                            <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;" v-if="!fileViewModel">
+                                <button type="button" class="btn btn-sm pull-right bg-blue" @@click="FileViewChange()">  <i class="fa fa-list-ol"></i> 列表视图</button>
+                            </div>
+
+
+                            <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
+                                <button type="button" class="btn btn-sm pull-right bg-red" @@click="BatchDeleteFile()">  <i class="fa fa-trash-o"></i> 批量删除</button>
+                            </div>
+
+                            <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
+                                <button type="button" class="btn btn-sm pull-right bg-blue" @@click="BatchDownload()">  <i class="fa fa-download"></i> 批量下载</button>
+                            </div>
+
+                            <div class="input-group input-group-sm  col-md-1 pull-right ml-1" style="margin-left:10px;">
+                                <button type="button" class="btn btn-sm pull-right bg-blue" @@click="ShowAddFile()">  <i class="fa fa-upload"></i> 上传</button>
+                            </div>
+
+                            <div class="input-group input-group-sm  col-md-2 pull-right ml-1" style="margin-left: 10px; width: 180px;">
+                                <input type="text" name="table_search" class="form-control pull-right" placeholder="搜索" id="txt_Search" v-model="keywork" />
+
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default " @@click="Query()" id="btn_Search"  ><i class="fa fa-search"></i></button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover" v-if="fileViewModel" id="tab_file">
+                            <tbody>
+                                <tr>
+                                    <th><input type="checkbox" id="chk_all" @@click="OnAllCheck()" style="width:20px;height:20px" /></th>
+                                    <th>文件名</th>
+                                    <th>发布人</th>
+                                    <th>上传时间</th>
+                                    <th>归属目录</th>
+                                    <th>操作</th>
+                                </tr>
+                                <tr v-for="(item,index) in documentList">
+
+                                    <td><input type="checkbox" name="chk_file" :id="item.Id" @@click="OnFileCheck()" style="width:20px;height:20px" /></td>
+                                    <td>{{item.File_Decode_Name}}</td>
+                                    <td>{{item.Upload_UserName}}</td>
+                                    <td>{{item.Create_Time}}</td>
+                                    <td>{{item.Upload_Directory==null?"根目录":item.Upload_Directory}}</td>
+                                    <td>
+                                        <button type="button" class="btn bg-blue  btn-xs" v-on:click="DownFile(item)">下载</button>
+                                        &nbsp;
+                                        <button type="button" class="btn bg-red  btn-xs" v-on:click="DelFile(item)">删除</button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+
+
+                        <div class="col-md-12" v-if="!fileViewModel" id="grid_file">
+                            <div class="col-md-3" v-for="(item,index) in documentList">
+
+                                <div style="margin:10px,10px,10px,10px;padding:5px;text-align:center">
+                                    <img :src="FileTypeImage(item.File_Type)" style="margin:auto 0;padding:5px" width="80" height="80" />
+                                    <div style="text-align:center ;height:30px;">
+                                        <input type="checkbox" name="chk_file" :id="item.Id" @@click="OnFileCheck()"  />
+                                        <span class="text" style="text-align:center;">   {{item.File_Decode_Name}}</span>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                    <!-- /.box-body -->
+
+
+                    <div class="box-footer no-padding">
+                        <div class="card-footer clearfix pull-left" style="margin-left:20px;margin-top:30px;margin-bottom:30px">
+
+                        </div>
+
+                        <div class="card-footer clearfix pull-right " style="margin-right:30px;margin-top:30px;margin-bottom:30px" id="div_page">
+                            <zpagenav v-bind:page="pageModel.pageIndex" v-bind:page-size="pageModel.pageSize" v-bind:total="pageModel.TotalCount"
+                                      v-bind:max-page="pageModel.ToTalPage" v-on:pagehandler="InitFile">
+                            </zpagenav>
+                        </div>
+
+
+                        <!-- /.pull-right -->
+                    </div>
+                </div>
+            </div>
+
+
         </div>
 
 
-    </div>
+        <div class="modal fade" id="modal-default">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="txt_username">上传文档</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <el-form ref="form" :model="newData" label-width="80px" label-position="right" size="mini">
+                            <el-form-item label="" prop="name">
 
 
-    <div class="modal fade" id="modal-default">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="txt_username">上传文档</h4>
+                                <el-upload class="upload-demo"
+                                           ref="upload"
+                                           action=""
+                                           accept=".doc, .docx, .txt, .xlsx, .xls, .mpp, .pptx, .ppt,.jpg,.jpeg,.png"
+                                           :http-request="httpRequest"
+                                           :on-preview="handlePreview"
+                                           :on-remove="handleRemove"
+                                           :on-change="fileChange"
+                                           :file-list="fileList"
+                                           multiple
+                                           :auto-upload="false">
+                                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                                    <el-button style="margin-left: 10px;" size="small" type="success" @@click="SubmitUpload">上传到服务器</el-button>
+
+                                </el-upload>
+                            </el-form-item>
+                        </el-form>
+
+                    </div>
+                    <div class="modal-footer">
+
+                    </div>
                 </div>
-                <div class="modal-body">
-
-                    <el-form ref="form" :model="newData" label-width="80px" label-position="right" size="mini">
-                        <el-form-item label="" prop="name">
-
-
-                            <el-upload class="upload-demo"
-                                       ref="upload"
-                                       action=""
-                                       accept=".doc, .docx, .txt, .xlsx, .xls, .mpp, .pptx, .ppt,.jpg,.jpeg,.png"
-                                       :http-request="httpRequest"
-                                       :on-preview="handlePreview"
-                                       :on-remove="handleRemove"
-                                       :on-change="fileChange"
-                                       :file-list="fileList"
-                                       multiple
-                                       :auto-upload="false">
-                                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                                <el-button style="margin-left: 10px;" size="small" type="success" @@click="SubmitUpload">上传到服务器</el-button>
-
-                            </el-upload>
-                        </el-form-item>
-                    </el-form>
-
-                </div>
-                <div class="modal-footer">
-
-                </div>
+                <!-- /.modal-content -->
             </div>
-            <!-- /.modal-content -->
         </div>
-    </div>
 
 
 
@@ -311,20 +325,19 @@
 
 
                 fileViewModel: true,    //文件视图模式，默认true，为table
-
+                
             },
             created: function () {
                 self = this;
                 self.InitDir();
-                self.InitFile(1);
+            
             },
             mounted() {
                 this.EnterKeyup();
             },
             methods: {
                 Query() {
-
-
+                    self.InitFile(1);
                 },
                 InitDir() {
 
@@ -343,6 +356,9 @@
                             }
 
                             self.dirlist = result.Content;
+
+                            //加载文件
+                            self.InitFile(1);
 
                         }
                     })
@@ -508,6 +524,13 @@
                 },
                 InitFile(index) {
 
+                    //默认加载第一个文件夹
+
+                    if (Object.keys(self.checkDir).length<=0)
+                    {
+                        self.checkDir = self.dirlist[0];
+                    }
+
                     AjaxPost({
                         url: "/DocumentUpload/ListFile",
                         data: {
@@ -573,7 +596,7 @@
                                     self.InitFile(self.pageModel.pageIndex);
 
                                     // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
-                                    self.OnFileCheck();
+                                    self.OnClearCheck();
                                 }
                             });
                         }
@@ -653,20 +676,25 @@
                     return FileType2Image(type);
                 },
                 OnFileCheck() {
-                    var files = $("#tab_file td :checkbox");
+
+                    var files = $("#tab_file td :checkbox"); //列表模式下，从tab中获取
+                    if (!self.fileViewModel) {
+                       
+                        files = $("#grid_file div :checkbox");  //网格模式下，从gird中获取
+                    } 
+
+                    console.log(files);
+
                     self.checkList = [];
                     $.each(files, function (index, value) {
-
                         if (files[index].checked) {
-
                             let model = {};
                             model.id = files[index].id;
                             self.checkList.push(model);
-
                         }
-
                     });
-
+                    console.log("选中的复选框=====",self.checkList );
+                   
                 },
                 OnAllCheck() {
 
@@ -691,6 +719,20 @@
                     }
 
                 },
+                OnClearCheck() {
+                    var files = $("#tab_file td :checkbox"); //列表模式下，从tab中获取
+                    if (!self.fileViewModel) {
+
+                        files = $("#grid_file div :checkbox");  //网格模式下，从gird中获取
+                    }
+
+                    self.checkList = [];
+                    $.each(files, function (index, value) {
+                        files[index].checked = false;
+                        
+                    });
+
+                },
                 BatchDownload() {
                     console.log("选中的集合", self.checkList);
                     if (self.checkList.length <= 0) {
@@ -705,14 +747,24 @@
                         array +=","
                     }
 
+
+
                     array = array.substring(0, array.lastIndexOf(','));
 
                     console.log(array);
+
+                    var dialog =  bootbox.dialog({
+                        message: '<div class="text-center"><i class="fa fa-spin fa-spinner"></i> 文件准备中...</div>',
+                        closeButton: false
+                    })
+                    
 
                     AjaxPost({
                         url: "/DocumentUpload/BatchDownload",
                         data: { ids: array },
                         success: function (result) {
+
+                            dialog.modal('hide');
 
                             console.log(result);
 
@@ -774,7 +826,8 @@
 
 
                                     // 删除之后 调用一次 清理 选中集合 ，以免文件已不存在，导致批量删除 或 批量下载失败
-                                    self.OnFileCheck();
+                                    self.OnClearCheck();
+                                 
                                 }
 
                             });

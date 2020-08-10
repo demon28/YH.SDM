@@ -66,7 +66,17 @@ namespace YH.SDM.WebApp.Controllers
 
 
             Tsdm_uploadfile_Da da = new Tsdm_uploadfile_Da();
-            var list = da.ListByDirId(dirid, keyword, ref page);
+            List<UploadFileModel> list = new List<UploadFileModel>() ;
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                list = da.ListByWhere(keyword, ref page);
+            }
+            else
+            {
+                list = da.ListByDirId(dirid, keyword, ref page);
+            }
+        
             return SuccessResultList(list, page);
         }
 
@@ -160,7 +170,7 @@ namespace YH.SDM.WebApp.Controllers
 
 
                     //保存的文件名称(以名称和保存时间命名)
-                    //  var saveName = formFile.FileName.Substring(0, formFile.FileName.LastIndexOf('.')) + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
+                    // var saveName = formFile.FileName.Substring(0, formFile.FileName.LastIndexOf('.')) + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + fileExtension;
 
                     //将文件命名为gui,不存储为文件，数据库中保存真实文件名
                     var saveName = Guid.NewGuid().ToString();
